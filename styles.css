@@ -31,8 +31,9 @@
 }
 
 #navbar__logo {
-  background-color: #ff8177;
-  background: linear-gradient(to left, #ff0844 0%, #ffb199 100%);
+  background: #ffb199;
+  background: -webkit-linear-gradient(to left, #ff0844 , #ffb199);
+  background: linear-gradient(to left, #ff0844 , #ffb199);
   background-size: 100%;
   -webkit-background-clip: text;
   -moz-background-clip: text;
