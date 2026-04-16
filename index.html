@@ -432,6 +432,67 @@
       letter-spacing: 1px;
     }
 
+    .games-status {
+      margin-top: 20px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .game-card {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+
+    .game-cover {
+      width: 100%;
+      aspect-ratio: 460 / 215;
+      object-fit: cover;
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(255, 45, 120, 0.08));
+      border-bottom: 1px solid var(--border);
+    }
+
+    .game-body {
+      padding: 20px 22px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .game-body .game-title,
+    .game-body .game-price {
+      margin-bottom: 0;
+    }
+
+    .game-actions {
+      margin-top: auto;
+      padding-top: 8px;
+    }
+
+    .game-link {
+      display: inline-block;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      text-decoration: none;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      transition: all 0.2s;
+    }
+
+    .game-link:hover {
+      box-shadow: var(--glow-c);
+      color: #fff;
+      border-color: #fff;
+    }
+
     .pay-card p, .game-card p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.7; }
 
     .zero-fee {
@@ -666,23 +727,8 @@
     <span data-i18n="section_label">// GAMES</span>
     <span data-i18n="games_title">FEATURED GAMES</span>
   </div>
-  <div class="games-grid">
-    <div class="game-card">
-      <div class="game-title" data-i18n="game1_t">Battlefield 6</div>
-      <div class="game-price" data-i18n="game1_p">$69.99</div>
-      <p data-i18n="game1_d">High-intensity warfare, large-scale battles, and next-generation multiplayer action.</p>
-    </div>
-    <div class="game-card">
-      <div class="game-title" data-i18n="game2_t">ARC Raiders</div>
-      <div class="game-price" data-i18n="game2_p">$39.99</div>
-      <p data-i18n="game2_d">A multiplayer extraction adventure with survival, exploration, and tactical combat.</p>
-    </div>
-    <div class="game-card">
-      <div class="game-title" data-i18n="game3_t">Forza Horizon 6</div>
-      <div class="game-price" data-i18n="game3_p">$69.99</div>
-      <p data-i18n="game3_d">Open-world racing, stunning cars, and a huge driving festival experience.</p>
-    </div>
-  </div>
+  <div id="gamesStatus" class="games-status" data-i18n="games_loading">Loading featured games from Steam...</div>
+  <div class="games-grid" id="featuredGames"></div>
 </section>
 
 <div class="divider"><div class="divider-line"></div><span class="divider-label">payment methods</span><div class="divider-line"></div></div>
@@ -774,6 +820,12 @@ const i18n = {
     step4_t: "RECEIVE",
     step4_p: "Once the transfer is received, your Steam key is delivered in less than 12 hours.",
     games_title: "FEATURED GAMES",
+    games_loading: "Loading featured games from Steam...",
+    games_fallback_notice: "Showing curated games while Steam data is unavailable.",
+    games_error: "Could not load Steam data right now.",
+    game_cta: "View on Steam",
+    price_na: "Price unavailable",
+    price_free: "Free to Play",
     game1_t: "Battlefield 6",
     game1_p: "$69.99",
     game1_d: "High-intensity warfare, large-scale battles, and next-generation multiplayer action.",
@@ -827,6 +879,12 @@ const i18n = {
     step4_t: "RECEVOIR",
     step4_p: "Une fois le virement reçu, votre clé Steam est livrée en moins de 12 heures.",
     games_title: "JEUX EN VEDETTE",
+    games_loading: "Chargement des jeux vedettes depuis Steam...",
+    games_fallback_notice: "Affichage de jeux sélectionnés en attendant les données Steam.",
+    games_error: "Impossible de charger les données Steam pour le moment.",
+    game_cta: "Voir sur Steam",
+    price_na: "Prix indisponible",
+    price_free: "Gratuit",
     game1_t: "Battlefield 6",
     game1_p: "$69.99",
     game1_d: "Guerre intense, batailles à grande échelle et action multijoueur nouvelle génération.",
@@ -880,6 +938,12 @@ const i18n = {
     step4_t: "استلم",
     step4_p: "بعد استلام التحويل، يتم إرسال مفتاح ستيم في أقل من 12 ساعة.",
     games_title: "ألعاب مميزة",
+    games_loading: "جاري تحميل الألعاب المميزة من ستيم...",
+    games_fallback_notice: "نعرض ألعابا مختارة مؤقتا حتى تتوفر بيانات ستيم.",
+    games_error: "تعذر تحميل بيانات ستيم حاليا.",
+    game_cta: "عرض على ستيم",
+    price_na: "السعر غير متوفر",
+    price_free: "مجاني",
     game1_t: "Battlefield 6",
     game1_p: "$69.99",
     game1_d: "حروب قوية، معارك واسعة النطاق، وأكشن جماعي من الجيل الجديد.",
@@ -911,7 +975,152 @@ const i18n = {
   }
 };
 
+const featuredGamesCache = new Map();
+const FEATURED_STEAM_APP_IDS = [1091500, 1245620, 730];
+
 let currentLang = 'en';
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getFallbackGames(t) {
+  return [
+    {
+      name: t.game1_t,
+      price: t.game1_p,
+      short_description: t.game1_d,
+      image: '',
+      url: ''
+    },
+    {
+      name: t.game2_t,
+      price: t.game2_p,
+      short_description: t.game2_d,
+      image: '',
+      url: ''
+    },
+    {
+      name: t.game3_t,
+      price: t.game3_p,
+      short_description: t.game3_d,
+      image: '',
+      url: ''
+    }
+  ];
+}
+
+function normalizeGame(game, t) {
+  const hasPrice = typeof game.price === 'string' && game.price.trim().length > 0;
+  return {
+    name: game.name || '',
+    short_description: game.short_description || '',
+    price: hasPrice ? game.price : (game.is_free ? t.price_free : t.price_na),
+    image: game.image || '',
+    url: game.url || ''
+  };
+}
+
+function renderFeaturedGames(games, t) {
+  const grid = document.getElementById('featuredGames');
+  const items = Array.isArray(games) ? games : [];
+
+  grid.innerHTML = items.map((game) => {
+    const safeTitle = escapeHtml(game.name || 'Steam Game');
+    const safePrice = escapeHtml(game.price || t.price_na);
+    const safeDescription = escapeHtml(game.short_description || '');
+    const hasImage = Boolean(game.image);
+    const safeImage = escapeHtml(game.image || '');
+    const hasUrl = Boolean(game.url);
+    const safeUrl = escapeHtml(game.url || '');
+
+    return `
+      <article class="game-card">
+        ${hasImage
+          ? `<img class="game-cover" src="${safeImage}" alt="${safeTitle}" loading="lazy">`
+          : `<div class="game-cover" aria-hidden="true"></div>`}
+        <div class="game-body">
+          <div class="game-title">${safeTitle}</div>
+          <div class="game-price">${safePrice}</div>
+          <p>${safeDescription}</p>
+          ${hasUrl
+            ? `<div class="game-actions"><a class="game-link" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(t.game_cta)}</a></div>`
+            : ''}
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+async function fetchSteamGameById(appId, lang) {
+  const endpoint = `https://store.steampowered.com/api/appdetails?appids=${appId}&cc=us&l=${encodeURIComponent(lang)}`;
+  const response = await fetch(endpoint, { method: 'GET', mode: 'cors', cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error(`Steam API returned ${response.status} for ${appId}`);
+  }
+
+  const payload = await response.json();
+  const node = payload && payload[String(appId)];
+  if (!node || !node.success || !node.data) {
+    return null;
+  }
+
+  const game = node.data;
+  return {
+    name: game.name || '',
+    short_description: game.short_description || '',
+    image: game.header_image || '',
+    price: game.price_overview && game.price_overview.final_formatted ? game.price_overview.final_formatted : '',
+    is_free: Boolean(game.is_free),
+    url: `https://store.steampowered.com/app/${appId}`
+  };
+}
+
+async function loadFeaturedGames(lang) {
+  const t = i18n[lang] || i18n.en;
+  const gamesStatus = document.getElementById('gamesStatus');
+
+  gamesStatus.textContent = t.games_loading;
+  gamesStatus.style.display = 'block';
+
+  if (featuredGamesCache.has(lang)) {
+    renderFeaturedGames(featuredGamesCache.get(lang), t);
+    gamesStatus.style.display = 'none';
+    return;
+  }
+
+  try {
+    const directGames = await Promise.all(
+      FEATURED_STEAM_APP_IDS.map((appId) => fetchSteamGameById(appId, lang).catch(() => null))
+    );
+
+    const fromApi = directGames.filter(Boolean);
+    if (fromApi.length === 0) {
+      throw new Error('No games returned from Steam API');
+    }
+
+    const normalized = fromApi.map(game => normalizeGame(game, t));
+    if (normalized.length < 3) {
+      const fallback = getFallbackGames(t).slice(0, 3 - normalized.length);
+      normalized.push(...fallback);
+    }
+
+    featuredGamesCache.set(lang, normalized);
+    renderFeaturedGames(normalized, t);
+    gamesStatus.textContent = normalized.length >= 3 ? '' : (t.games_fallback_notice || t.games_error);
+    gamesStatus.style.display = normalized.length >= 3 ? 'none' : 'block';
+  } catch (error) {
+    console.error(error);
+    renderFeaturedGames(getFallbackGames(t), t);
+    gamesStatus.textContent = t.games_fallback_notice || t.games_error;
+    gamesStatus.style.display = 'block';
+  }
+}
 
 function setLang(lang) {
   currentLang = lang;
@@ -930,6 +1139,7 @@ function setLang(lang) {
 
   buildFAQ(t.faqs);
   buildTicker(t.ticker_items);
+  loadFeaturedGames(lang);
 }
 
 function buildFAQ(faqs) {
