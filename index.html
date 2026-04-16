@@ -976,7 +976,8 @@ const i18n = {
 };
 
 const featuredGamesCache = new Map();
-const FEATURED_STEAM_APP_IDS = [1091500, 1245620, 730];
+const FEATURED_STEAM_APP_IDS = [3764200, 2807960, 2483190, 1808500, 3059520, 3405690];
+const STEAM_STORE_ORIGIN = 'https://store.steampowered.com';
 
 let currentLang = 'en';
 
@@ -1058,15 +1059,42 @@ function renderFeaturedGames(games, t) {
 }
 
 async function fetchSteamGameById(appId, lang) {
-  const endpoint = `https://store.steampowered.com/api/appdetails?appids=${appId}&cc=us&l=${encodeURIComponent(lang)}`;
-  const response = await fetch(endpoint, { method: 'GET', mode: 'cors', cache: 'no-store' });
-  if (!response.ok) {
-    throw new Error(`Steam API returned ${response.status} for ${appId}`);
+  const steamUrl = `${STEAM_STORE_ORIGIN}/api/appdetails?appids=${appId}&cc=us&l=${encodeURIComponent(lang)}`;
+  const endpoints = [
+    steamUrl,
+    `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(steamUrl)}`
+  ];
+
+  let node = null;
+  for (const endpoint of endpoints) {
+    try {
+      const response = await fetch(endpoint, { method: 'GET', cache: 'no-store' });
+      if (!response.ok) {
+        continue;
+      }
+
+      const payload = await response.json();
+      const candidate = payload && payload[String(appId)];
+      if (!candidate) {
+        continue;
+      }
+
+      if (candidate.success === false) {
+        continue;
+      }
+
+      if (!candidate.data) {
+        continue;
+      }
+
+      node = candidate;
+      break;
+    } catch (error) {
+      console.warn('Steam fetch failed for endpoint:', endpoint, error);
+    }
   }
 
-  const payload = await response.json();
-  const node = payload && payload[String(appId)];
-  if (!node || !node.success || !node.data) {
+  if (!node || !node.data) {
     return null;
   }
 
