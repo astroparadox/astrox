@@ -1,156 +1,967 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Astrox inc.</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="styles.css" />
-    <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"
-      integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc"
-      crossorigin="anonymous"
-    />
-  </head>
-  <body>
-    <!-- Navbar Section -->
-    <nav class="navbar">
-      <div class="navbar__container">
-        <a href="#home" id="navbar__logo">ASTROX</a>
-        <div class="navbar__toggle" id="mobile-menu">
-          <span class="bar"></span> <span class="bar"></span>
-          <span class="bar"></span>
-        </div>
-        <ul class="navbar__menu">
-          <li class="navbar__item">
-            <a href="#home" class="navbar__links" id="home-page">Home</a>
-          </li>
-          <li class="navbar__item">
-            <a href="#about" class="navbar__links" id="about-page">About</a>
-          </li>
-          <li class="navbar__item">
-            <a href="#services" class="navbar__links" id="services-page"
-              >Services</a
-            >
-          </li>
-          <li class="navbar__btn">
-            <a href="#sign-up" class="button" id="signup">Sign Up</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASTROX — Steam Keys Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #060910;
+      --bg2: #0b1120;
+      --cyan: #00f0ff;
+      --pink: #ff2d78;
+      --yellow: #f7c948;
+      --text: #c8d8e8;
+      --text-dim: #4a6070;
+      --border: rgba(0,240,255,0.18);
+      --glow-c: 0 0 12px rgba(0,240,255,0.5);
+      --glow-p: 0 0 12px rgba(255,45,120,0.5);
+    }
 
-    <!-- Hero Section -->
-    <div class="hero" id="home">
-      <div class="hero__container">
-        <h1 class="hero__heading">We make your <span>APP</span></h1>
-        <p class="hero__description">Smooth user experience</p>
-        <button class="main__btn"><a href="#">Explore</a></button>
-      </div>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.07) 2px,
+        rgba(0,0,0,0.07) 4px
+      );
+    }
+
+    body::after {
+      content: '';
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 998;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,240,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,240,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridDrift 40s linear infinite;
+    }
+
+    @keyframes gridDrift {
+      from { background-position: 0 0; }
+      to   { background-position: 60px 60px; }
+    }
+
+    .corner { position: fixed; width: 60px; height: 60px; z-index: 100; }
+    .corner-tl { top: 12px; left: 12px; border-top: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+    .corner-tr { top: 12px; right: 12px; border-top: 2px solid var(--pink); border-right: 2px solid var(--pink); }
+    .corner-bl { bottom: 12px; left: 12px; border-bottom: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+    .corner-br { bottom: 12px; right: 12px; border-bottom: 2px solid var(--pink); border-right: 2px solid var(--pink); }
+
+    header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(6,9,16,0.85);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+    }
+
+    .logo {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: 1.8rem;
+      letter-spacing: 6px;
+      color: var(--cyan);
+      text-shadow: var(--glow-c);
+      text-decoration: none;
+    }
+
+    .logo span { color: var(--pink); text-shadow: var(--glow-p); }
+
+    nav { display: flex; gap: 28px; align-items: center; }
+
+    nav a {
+      font-family: 'Share Tech Mono', monospace;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+
+    nav a:hover { color: var(--cyan); text-shadow: var(--glow-c); }
+
+    .lang-switcher { display: flex; gap: 6px; }
+
+    .lang-btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover, .lang-btn.active {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      box-shadow: var(--glow-c);
+    }
+
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 20px;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,240,255,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; }
+      50% { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+    }
+
+    .hero-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 4px;
+      color: var(--pink);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero h1 {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: clamp(2.8rem, 8vw, 6rem);
+      line-height: 1;
+      letter-spacing: 8px;
+      color: #fff;
+      text-shadow: 0 0 40px rgba(0,240,255,0.25);
+      animation: fadeUp 0.6s 0.1s ease both;
+      margin-bottom: 10px;
+    }
+
+    .hero h1 .accent { color: var(--cyan); text-shadow: var(--glow-c), 0 0 60px rgba(0,240,255,0.3); }
+
+    .hero-sub {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 300;
+      color: var(--text-dim);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      animation: fadeUp 0.6s 0.2s ease both;
+      margin-bottom: 40px;
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.6s 0.3s ease both;
+      margin-bottom: 48px;
+    }
+
+    .badge {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      padding: 6px 16px;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: rgba(0,240,255,0.05);
+    }
+
+    .badge.pink { border-color: var(--pink); color: var(--pink); background: rgba(255,45,120,0.05); }
+    .badge.yellow { border-color: var(--yellow); color: var(--yellow); background: rgba(247,201,72,0.05); }
+
+    .cta-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+
+    .btn {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      padding: 14px 32px;
+      cursor: pointer;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: all 0.22s;
+      display: inline-block;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: currentColor;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .btn:hover::before { opacity: 0.08; }
+
+    .btn-primary {
+      background: var(--cyan);
+      color: var(--bg);
+      border: none;
+      box-shadow: var(--glow-c);
+    }
+
+    .btn-primary:hover { box-shadow: 0 0 24px rgba(0,240,255,0.8); letter-spacing: 4px; }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--cyan);
+      border: 1px solid var(--cyan);
+    }
+
+    .btn-outline:hover { box-shadow: var(--glow-c); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .divider {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 40px;
+      margin: 20px 0;
+    }
+
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 4px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 80px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      text-shadow: var(--glow-c);
+      margin-bottom: 8px;
+    }
+
+    .section-title span {
+      color: var(--text-dim);
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      display: block;
+      margin-bottom: 4px;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .step {
+      border: 1px solid var(--border);
+      padding: 28px 24px;
+      background: rgba(0,240,255,0.02);
+      position: relative;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .step:hover {
+      border-color: rgba(0,240,255,0.4);
+      box-shadow: var(--glow-c);
+    }
+
+    .step-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: rgba(0,240,255,0.1);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .step-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .step p { font-size: 0.92rem; color: var(--text-dim); line-height: 1.7; }
+
+    .payment-grid, .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .pay-card, .game-card {
+      border: 1px solid var(--border);
+      padding: 32px 28px;
+      background: var(--bg2);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.22s;
+    }
+
+    .pay-card::before, .game-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+
+    .pay-card.usd::before { background: linear-gradient(90deg, var(--yellow), transparent); }
+    .pay-card.bank::before { background: linear-gradient(90deg, var(--cyan), transparent); }
+    .pay-card.contact::before { background: linear-gradient(90deg, var(--pink), transparent); }
+
+    .game-card:nth-child(1)::before { background: linear-gradient(90deg, var(--cyan), transparent); }
+    .game-card:nth-child(2)::before { background: linear-gradient(90deg, var(--pink), transparent); }
+    .game-card:nth-child(3)::before { background: linear-gradient(90deg, var(--yellow), transparent); }
+
+    .pay-card:hover, .game-card:hover {
+      border-color: rgba(0,240,255,0.3);
+      transform: translateY(-3px);
+    }
+
+    .pay-icon {
+      font-size: 2rem;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .pay-title, .game-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .pay-card.usd .pay-title { color: var(--yellow); }
+    .pay-card.bank .pay-title { color: var(--cyan); }
+    .pay-card.contact .pay-title { color: var(--pink); }
+
+    .game-title { color: var(--cyan); line-height: 1.4; }
+    .game-price {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1rem;
+      color: var(--yellow);
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .pay-card p, .game-card p { font-size: 0.9rem; color: var(--text-dim); line-height: 1.7; }
+
+    .zero-fee {
+      display: inline-block;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      padding: 3px 10px;
+      border: 1px solid var(--yellow);
+      color: var(--yellow);
+      letter-spacing: 2px;
+      margin-top: 12px;
+    }
+
+    .contact-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 40px;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      transition: all 0.2s;
+      background: var(--bg2);
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .contact-link:hover { border-color: var(--pink); color: var(--pink); box-shadow: var(--glow-p); }
+    .contact-link .icon { font-size: 1.3rem; }
+
+    .faq-list { margin-top: 48px; display: flex; flex-direction: column; gap: 2px; }
+
+    .faq-item {
+      border: 1px solid var(--border);
+      background: var(--bg2);
+    }
+
+    .faq-q {
+      padding: 18px 24px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      transition: color 0.2s;
+      user-select: none;
+    }
+
+    .faq-q:hover { color: var(--cyan); }
+    .faq-q .arrow { transition: transform 0.3s; font-family: 'Share Tech Mono'; color: var(--cyan); }
+    .faq-item.open .faq-q .arrow { transform: rotate(90deg); }
+
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+      padding: 0 24px;
+      font-size: 0.92rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+    }
+
+    .faq-item.open .faq-a { max-height: 300px; padding: 0 24px 20px; }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: gap;
+      gap: 20px;
+      background: rgba(6,9,16,0.9);
+    }
+
+    .footer-logo {
+      font-family: 'Orbitron', monospace;
+      font-weight: 900;
+      font-size: 1.2rem;
+      letter-spacing: 5px;
+      color: var(--cyan);
+    }
+
+    .footer-logo span { color: var(--pink); }
+
+    .footer-copy {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+    }
+
+    .ticker-wrap {
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,240,255,0.02);
+      padding: 8px 0;
+    }
+
+    .ticker {
+      display: flex;
+      white-space: nowrap;
+      animation: ticker 30s linear infinite;
+    }
+
+    .ticker-item {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 3px;
+      color: var(--text-dim);
+      padding: 0 40px;
+      text-transform: uppercase;
+    }
+
+    .ticker-item .dot { color: var(--pink); margin-right: 6px; }
+
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    html[lang="ar"] {
+      direction: rtl;
+    }
+
+    html[lang="ar"] header { flex-direction: row-reverse; }
+    html[lang="ar"] .contact-link { flex-direction: row-reverse; }
+
+    @media (max-width: 700px) {
+      header { padding: 16px 20px; }
+      section { padding: 60px 20px; }
+      nav { display: none; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="corner corner-tl"></div>
+<div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div>
+<div class="corner corner-br"></div>
+
+<header>
+  <a href="#" class="logo">ASTR<span>O</span>X</a>
+  <nav>
+    <a href="#how" data-i18n="nav_how">HOW IT WORKS</a>
+    <a href="#games" data-i18n="nav_games">GAMES</a>
+    <a href="#payment" data-i18n="nav_pay">PAYMENT</a>
+    <a href="#contact" data-i18n="nav_contact">CONTACT</a>
+    <a href="#faq" data-i18n="nav_faq">FAQ</a>
+  </nav>
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('fr')">FR</button>
+    <button class="lang-btn" onclick="setLang('ar')">AR</button>
+  </div>
+</header>
+
+<div class="ticker-wrap">
+  <div class="ticker" id="ticker"></div>
+</div>
+
+<div class="hero">
+  <div class="hero-glow"></div>
+  <p class="hero-tag" data-i18n="hero_tag">// TUNISIA'S STEAM KEY DEALER</p>
+  <h1>ASTR<span class="accent">O</span>X</h1>
+  <p class="hero-sub" data-i18n="hero_sub">Steam Game Keys · 0 % Conversion and services Fees · Secure · Fast</p>
+  <div class="hero-badges">
+    <span class="badge yellow" data-i18n="badge_usd">Steam USD Prices</span>
+    <span class="badge" data-i18n="badge_delivery">Delivery &lt; 12 Hours</span>
+    <span class="badge pink" data-i18n="badge_bank">Bank Transfer</span>
+  </div>
+  <div class="cta-row">
+    <a href="#contact" class="btn btn-primary" data-i18n="cta_order">ORDER NOW</a>
+    <a href="#how" class="btn btn-outline" data-i18n="cta_learn">HOW IT WORKS</a>
+  </div>
+</div>
+
+<section id="how">
+  <div class="section-title">
+    <span data-i18n="section_label">// PROCESS</span>
+    <span data-i18n="how_title">HOW IT WORKS</span>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title" data-i18n="step1_t">CHOOSE</div>
+      <p data-i18n="step1_p">Choose the Steam game you want. Steam prices are shown in USD.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title" data-i18n="step2_t">ORDER</div>
+      <p data-i18n="step2_p">Send us the game title. We confirm availability and the final USD-based price.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title" data-i18n="step3_t">TRANSFER</div>
+      <p data-i18n="step3_p">Pay by bank transfer. Bank transfers usually take 1 to 2 business days to arrive.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-title" data-i18n="step4_t">RECEIVE</div>
+      <p data-i18n="step4_p">Once the transfer is received, your Steam key is delivered in less than 12 hours.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-label">featured games</span><div class="divider-line"></div></div>
+
+<section id="games">
+  <div class="section-title">
+    <span data-i18n="section_label">// GAMES</span>
+    <span data-i18n="games_title">FEATURED GAMES</span>
+  </div>
+  <div class="games-grid">
+    <div class="game-card">
+      <div class="game-title" data-i18n="game1_t">Battlefield 6</div>
+      <div class="game-price" data-i18n="game1_p">$69.99</div>
+      <p data-i18n="game1_d">High-intensity warfare, large-scale battles, and next-generation multiplayer action.</p>
+    </div>
+    <div class="game-card">
+      <div class="game-title" data-i18n="game2_t">ARC Raiders</div>
+      <div class="game-price" data-i18n="game2_p">$39.99</div>
+      <p data-i18n="game2_d">A multiplayer extraction adventure with survival, exploration, and tactical combat.</p>
+    </div>
+    <div class="game-card">
+      <div class="game-title" data-i18n="game3_t">Forza Horizon 6</div>
+      <div class="game-price" data-i18n="game3_p">$69.99</div>
+      <p data-i18n="game3_d">Open-world racing, stunning cars, and a huge driving festival experience.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div><span class="divider-label">payment methods</span><div class="divider-line"></div></div>
+
+<section id="payment">
+  <div class="section-title">
+    <span data-i18n="section_label">// PAYMENT</span>
+    <span data-i18n="pay_title">PAYMENT OPTIONS</span>
+  </div>
+  <div class="payment-grid">
+
+    <div class="pay-card usd">
+      <span class="pay-icon">$</span>
+      <div class="pay-title" data-i18n="usd_title">Steam Prices in USD</div>
+      <p data-i18n="usd_desc">Steam uses USD prices. We confirm the game price before payment so you know exactly what you are paying for.</p>
+      <span class="zero-fee" data-i18n="usd_label">USD PRICING</span>
     </div>
 
-    <!-- About Section -->
-    <div class="main" id="about">
-      <div class="main__container">
-        <div class="main__img--container">
-          <div class="main__img--card"><i class="fas fa-layer-group"></i></div>
-        </div>
-        <div class="main__content">
-          <h1>What do we do?</h1>
-          <h2>We help new businesses scale</h2>
-          <p>Schedule a call to learn more about our services</p>
-          <button class="main__btn"><a href="#">Schedule Call</a></button>
-        </div>
-      </div>
+    <div class="pay-card bank">
+      <span class="pay-icon">🏦</span>
+      <div class="pay-title" data-i18n="bank_title">Bank Transfer</div>
+      <p data-i18n="bank_desc">Payment is made by bank transfer. Transfers usually take 1 to 2 business days to arrive. Bank details are shared after order confirmation.</p>
     </div>
 
-    <!-- Services Section -->
-    <div class="services" id="services">
-      <h1>Our Services</h1>
-      <div class="services__wrapper">
-        <div class="services__card">
-          <h2>Website Hosting</h2>
-          <p>Get your own domain</p>
-          <div class="services__btn"><button>Get Started</button></div>
-        </div>
-        <div class="services__card">
-          <h2>Web Development</h2>
-          <p>Modern Web Apps</p>
-          <div class="services__btn"><button>Get Started</button></div>
-        </div>
-        <div class="services__card">
-          <h2>UI UX ?</h2>
-          <p>Desktop Apps and more</p>
-          <div class="services__btn"><button>Get Started</button></div>
-        </div>
-        <div class="services__card">
-          <h2>Other Tech</h2>
-          <p>AI and ML algorithms</p>
-          <p>Robotics and IOT</p>
-          <div class="services__btn"><button>Get Started</button></div>
-        </div>
-      </div>
+    <div class="pay-card contact">
+      <span class="pay-icon">💬</span>
+      <div class="pay-title" data-i18n="contact_title">Key Delivery</div>
+      <p data-i18n="contact_desc">After we receive the transfer, the Steam key is delivered in less than 12 hours.</p>
     </div>
 
-    <!-- Features Section -->
-    <div class="main" id="sign-up">
-      <div class="main__container">
-        <div class="main__content">
-          <h1>Join Our Team</h1>
-          <h2>Sign Up Today</h2>
-          <p>We need YOU !</p>
-          <button class="main__btn"><a href="#">Sign Up</a></button>
-        </div>
-        <div class="main__img--container">
-          <div class="main__img--card" id="card-2">
-            <i class="fas fa-users"></i>
-          </div>
-        </div>
-      </div>
-    </div>
+  </div>
+</section>
 
-    <!-- Footer Section -->
-    <div class="footer__container">
-      <div class="footer__links">
-        <div class="footer__link--wrapper">
-          <div class="footer__link--items">
-            <h2>About Us</h2>
-            <a href="/sign__up">How it works</a> 
-            <a href="/">Careers</a>
-          </div>
-          <div class="footer__link--items">
-            <h2>Contact Us</h2>
-            <a href="/">Contact</a> <a href="/">Support</a>
-          </div>
-          <div class="footer__link--items">
-            <h2>Social Media</h2>
-            <a href="https://www.instagram.com/astro_paradox/">Instagram</a> <a href="https://www.facebook.com/amine.bebba.58">Facebook</a>
-            <a href="https://fr.linkedin.com/in/amine-b%C3%A9bba-36b44721b">Linkedin</a>
-          </div>
-        </div>
-      </div>
-      <section class="social__media">
-        <div class="social__media--wrap">
-          <div class="footer__logo">
-            <a href="/" id="footer__logo">ASTROX</a>
-          </div>
-          <p class="website__rights">© ASTROX inc 2021. All rights reserved</p>
-          <div class="social__icons">
-            <a href="https://www.facebook.com/amine.bebba.58" class="social__icon--link" target="_blank"
-              ><i class="fab fa-facebook"></i
-            ></a>
-            <a href="https://www.instagram.com/astro_paradox/" class="social__icon--link"
-              ><i class="fab fa-instagram"></i
-            ></a>
-            <a href="https://fr.linkedin.com/in/amine-b%C3%A9bba-36b44721b" class="social__icon--link"
-              ><i class="fab fa-linkedin"></i
-            ></a>
-          </div>
-        </div>
-      </section>
-    </div>
+<div class="divider"><div class="divider-line"></div><span class="divider-label">get in touch</span><div class="divider-line"></div></div>
 
-    <script src="app.js"></script>
-  </body>
+<section id="contact">
+  <div class="section-title">
+    <span data-i18n="section_label">// CONTACT</span>
+    <span data-i18n="contact_sec_title">REACH US</span>
+  </div>
+  <div class="contact-links">
+    <a href="https://instagram.com/astrox" target="_blank" class="contact-link">
+      <span class="icon">📸</span>
+      <span>@ASTROX — Instagram</span>
+    </a>
+    <a href="mailto:contact@astrox.tn" class="contact-link">
+      <span class="icon">✉️</span>
+      <span>contact@astrox.tn</span>
+    </a>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="section-title">
+    <span data-i18n="section_label">// HELP</span>
+    <span data-i18n="faq_title">FAQ</span>
+  </div>
+  <div class="faq-list" id="faqList"></div>
+</section>
+
+<footer>
+  <div class="footer-logo">ASTR<span>O</span>X</div>
+  <div class="footer-copy" data-i18n="footer_copy">© 2025 ASTROX · TUNISIA · ALL RIGHTS RESERVED</div>
+</footer>
+
+<script>
+const i18n = {
+  en: {
+    nav_how: "HOW IT WORKS",
+    nav_games: "GAMES",
+    nav_pay: "PAYMENT",
+    nav_contact: "CONTACT",
+    nav_faq: "FAQ",
+    hero_tag: "// TUNISIA'S STEAM KEY DEALER",
+    hero_sub: "Steam Game Keys · 0 % Conversion and services Fees · Secure · Fast",
+    badge_usd: "Steam USD Prices",
+    badge_delivery: "Delivery < 12 Hours",
+    badge_bank: "Bank Transfer",
+    cta_order: "ORDER NOW",
+    cta_learn: "HOW IT WORKS",
+    section_label: "//",
+    how_title: "HOW IT WORKS",
+    step1_t: "CHOOSE",
+    step1_p: "Choose the Steam game you want. Steam prices are shown in USD.",
+    step2_t: "ORDER",
+    step2_p: "Send us the game title. We confirm availability and the final USD-based price.",
+    step3_t: "TRANSFER",
+    step3_p: "Pay by bank transfer. Bank transfers usually take 1 to 2 business days to arrive.",
+    step4_t: "RECEIVE",
+    step4_p: "Once the transfer is received, your Steam key is delivered in less than 12 hours.",
+    games_title: "FEATURED GAMES",
+    game1_t: "Battlefield 6",
+    game1_p: "$69.99",
+    game1_d: "High-intensity warfare, large-scale battles, and next-generation multiplayer action.",
+    game2_t: "ARC Raiders",
+    game2_p: "$39.99",
+    game2_d: "A multiplayer extraction adventure with survival, exploration, and tactical combat.",
+    game3_t: "Forza Horizon 6",
+    game3_p: "$69.99",
+    game3_d: "Open-world racing, stunning cars, and a huge driving festival experience.",
+    pay_title: "PAYMENT OPTIONS",
+    usd_title: "Steam Prices in USD",
+    usd_desc: "Steam uses USD prices. We confirm the game price before payment so you know exactly what you are paying for.",
+    usd_label: "USD PRICING",
+    bank_title: "Bank Transfer",
+    bank_desc: "Payment is made by bank transfer. Transfers usually take 1 to 2 business days to arrive. Bank details are shared after order confirmation.",
+    contact_title: "Key Delivery",
+    contact_desc: "After we receive the transfer, the Steam key is delivered in less than 12 hours.",
+    contact_sec_title: "REACH US",
+    faq_title: "FAQ",
+    footer_copy: "© 2025 ASTROX · TUNISIA · ALL RIGHTS RESERVED",
+    faqs: [
+      { q: "How do prices work?", a: "Steam prices are shown in USD. We confirm the exact game price with you before payment." },
+      { q: "How long does bank transfer take?", a: "Bank transfers usually take 1 to 2 business days to arrive." },
+      { q: "When do I receive the key?", a: "After the transfer is received, the Steam key is sent in less than 12 hours." },
+      { q: "Can I request a specific game?", a: "Yes. Send us the game title and we will confirm availability." },
+      { q: "What if my key doesn't work?", a: "Contact us immediately and we will review the issue and help resolve it." }
+    ],
+    ticker_items: ["STEAM KEYS", "USD PRICES", "BANK TRANSFER", "DELIVERY < 12 HOURS", "TRUSTED SELLER", "TUNISIA", "ASTROX"]
+  },
+  fr: {
+    nav_how: "COMMENT ÇA MARCHE",
+    nav_games: "JEUX",
+    nav_pay: "PAIEMENT",
+    nav_contact: "CONTACT",
+    nav_faq: "FAQ",
+    hero_tag: "// REVENDEUR DE CLÉS STEAM EN TUNISIE",
+    hero_sub: "Clés de jeux Steam · Rapide · Sécurisé",
+    badge_usd: "Prix Steam en USD",
+    badge_delivery: "Livraison < 12 Heures",
+    badge_bank: "Virement Bancaire",
+    cta_order: "COMMANDER",
+    cta_learn: "COMMENT ÇA MARCHE",
+    section_label: "//",
+    how_title: "COMMENT ÇA MARCHE",
+    step1_t: "CHOISIR",
+    step1_p: "Choisissez le jeu Steam que vous voulez. Les prix Steam sont affichés en USD.",
+    step2_t: "COMMANDER",
+    step2_p: "Envoyez-nous le nom du jeu. Nous confirmons la disponibilité et le prix final basé sur l'USD.",
+    step3_t: "VIREMENT",
+    step3_p: "Payez par virement bancaire. Les virements prennent généralement 1 à 2 jours ouvrables.",
+    step4_t: "RECEVOIR",
+    step4_p: "Une fois le virement reçu, votre clé Steam est livrée en moins de 12 heures.",
+    games_title: "JEUX EN VEDETTE",
+    game1_t: "Battlefield 6",
+    game1_p: "$69.99",
+    game1_d: "Guerre intense, batailles à grande échelle et action multijoueur nouvelle génération.",
+    game2_t: "ARC Raiders",
+    game2_p: "$39.99",
+    game2_d: "Une aventure d'extraction multijoueur avec survie, exploration et combat tactique.",
+    game3_t: "Forza Horizon 6",
+    game3_p: "$69.99",
+    game3_d: "Course en monde ouvert, voitures incroyables et immense expérience de festival automobile.",
+    pay_title: "OPTIONS DE PAIEMENT",
+    usd_title: "Prix Steam en USD",
+    usd_desc: "Steam utilise des prix en USD. Nous confirmons le prix du jeu avant le paiement pour que tout soit clair.",
+    usd_label: "PRIX EN USD",
+    bank_title: "Virement Bancaire",
+    bank_desc: "Le paiement se fait par virement bancaire. Les virements prennent généralement 1 à 2 jours ouvrables. Les coordonnées bancaires sont envoyées après confirmation de la commande.",
+    contact_title: "Livraison de la Clé",
+    contact_desc: "Après réception du virement, la clé Steam est livrée en moins de 12 heures.",
+    contact_sec_title: "NOUS CONTACTER",
+    faq_title: "FAQ",
+    footer_copy: "© 2025 ASTROX · TUNISIE · TOUS DROITS RÉSERVÉS",
+    faqs: [
+      { q: "Comment fonctionnent les prix ?", a: "Les prix Steam sont affichés en USD. Nous confirmons le prix exact du jeu avant le paiement." },
+      { q: "Combien de temps prend le virement ?", a: "Les virements bancaires prennent généralement 1 à 2 jours ouvrables." },
+      { q: "Quand vais-je recevoir la clé ?", a: "Après réception du virement, la clé Steam est envoyée en moins de 12 heures." },
+      { q: "Puis-je demander un jeu spécifique ?", a: "Oui. Envoyez-nous le nom du jeu et nous confirmerons la disponibilité." },
+      { q: "Que faire si la clé ne fonctionne pas ?", a: "Contactez-nous immédiatement et nous examinerons le problème pour vous aider." }
+    ],
+    ticker_items: ["CLÉS STEAM", "PRIX EN USD", "VIREMENT BANCAIRE", "LIVRAISON < 12 HEURES", "VENDEUR DE CONFIANCE", "TUNISIE", "ASTROX"]
+  },
+  ar: {
+    nav_how: "كيف يعمل",
+    nav_games: "الألعاب",
+    nav_pay: "الدفع",
+    nav_contact: "تواصل معنا",
+    nav_faq: "أسئلة شائعة",
+    hero_tag: "// بيع مفاتيح ستيم في تونس",
+    hero_sub: "مفاتيح ألعاب ستيم · سريع · آمن",
+    badge_usd: "أسعار ستيم بالدولار",
+    badge_delivery: "التسليم < 12 ساعة",
+    badge_bank: "تحويل بنكي",
+    cta_order: "اطلب الآن",
+    cta_learn: "كيف يعمل",
+    section_label: "//",
+    how_title: "كيف يعمل",
+    step1_t: "اختر",
+    step1_p: "اختر لعبة ستيم التي تريدها. أسعار ستيم معروضة بالدولار USD.",
+    step2_t: "اطلب",
+    step2_p: "أرسل لنا اسم اللعبة. نؤكد التوفر والسعر النهائي المبني على الدولار.",
+    step3_t: "حوّل",
+    step3_p: "ادفع عن طريق تحويل بنكي. عادةً يصل التحويل خلال 1 إلى 2 يوم عمل.",
+    step4_t: "استلم",
+    step4_p: "بعد استلام التحويل، يتم إرسال مفتاح ستيم في أقل من 12 ساعة.",
+    games_title: "ألعاب مميزة",
+    game1_t: "Battlefield 6",
+    game1_p: "$69.99",
+    game1_d: "حروب قوية، معارك واسعة النطاق، وأكشن جماعي من الجيل الجديد.",
+    game2_t: "ARC Raiders",
+    game2_p: "$39.99",
+    game2_d: "مغامرة استخراج جماعية مع البقاء والاستكشاف والقتال التكتيكي.",
+    game3_t: "Forza Horizon 6",
+    game3_p: "$69.99",
+    game3_d: "سباقات عالم مفتوح، سيارات مذهلة، وتجربة مهرجان قيادة ضخمة.",
+    pay_title: "خيارات الدفع",
+    usd_title: "أسعار ستيم بالدولار",
+    usd_desc: "ستيم يستخدم الأسعار بالدولار USD. نؤكد سعر اللعبة قبل الدفع حتى تكون الصورة واضحة بالكامل.",
+    usd_label: "تسعير بالدولار",
+    bank_title: "تحويل بنكي",
+    bank_desc: "يتم الدفع عن طريق تحويل بنكي. عادةً يستغرق التحويل 1 إلى 2 يوم عمل. يتم إرسال معلومات الحساب بعد تأكيد الطلب.",
+    contact_title: "تسليم المفتاح",
+    contact_desc: "بعد استلام التحويل، يتم إرسال مفتاح ستيم في أقل من 12 ساعة.",
+    contact_sec_title: "تواصل معنا",
+    faq_title: "أسئلة شائعة",
+    footer_copy: "© 2025 ASTROX · تونس · جميع الحقوق محفوظة",
+    faqs: [
+      { q: "كيف تعمل الأسعار؟", a: "أسعار ستيم معروضة بالدولار USD. نؤكد السعر النهائي معك قبل الدفع." },
+      { q: "كم يستغرق التحويل البنكي؟", a: "عادةً يستغرق التحويل البنكي من 1 إلى 2 يوم عمل." },
+      { q: "متى أستلم المفتاح؟", a: "بعد استلام التحويل، يتم إرسال مفتاح ستيم في أقل من 12 ساعة." },
+      { q: "هل يمكنني طلب لعبة معينة؟", a: "نعم. أرسل لنا اسم اللعبة وسنؤكد التوفر." },
+      { q: "ماذا لو لم يعمل المفتاح؟", a: "تواصل معنا فورًا وسنراجع المشكلة ونساعدك في حلها." }
+    ],
+    ticker_items: ["مفاتيح ستيم", "أسعار بالدولار", "تحويل بنكي", "التسليم < 12 ساعة", "بائع موثوق", "تونس", "ASTROX"]
+  }
+};
+
+let currentLang = 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  const t = i18n[lang];
+  const html = document.documentElement;
+  html.lang = lang;
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (t[key]) el.textContent = t[key];
+  });
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.toLowerCase() === lang);
+  });
+
+  buildFAQ(t.faqs);
+  buildTicker(t.ticker_items);
+}
+
+function buildFAQ(faqs) {
+  const list = document.getElementById('faqList');
+  list.innerHTML = '';
+  faqs.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'faq-item';
+    el.innerHTML = `
+      <div class="faq-q" onclick="toggleFAQ(this)">
+        <span>${item.q}</span>
+        <span class="arrow">▶</span>
+      </div>
+      <div class="faq-a">${item.a}</div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function toggleFAQ(el) {
+  el.parentElement.classList.toggle('open');
+}
+
+function buildTicker(items) {
+  const ticker = document.getElementById('ticker');
+  const doubled = [...items, ...items, ...items, ...items];
+  ticker.innerHTML = doubled.map(t =>
+    `<span class="ticker-item"><span class="dot">◆</span>${t}</span>`
+  ).join('');
+}
+
+setLang('en');
+</script>
+</body>
 </html>
