@@ -79,7 +79,8 @@
     .corner-br { bottom: 12px; right: 12px; border-bottom: 2px solid var(--pink); border-right: 2px solid var(--pink); }
 
     header {
-      position: relative;
+      position: sticky;
+      top: 0;
       z-index: 10;
       display: flex;
       align-items: center;
@@ -88,8 +89,6 @@
       border-bottom: 1px solid var(--border);
       background: rgba(6,9,16,0.85);
       backdrop-filter: blur(8px);
-      position: sticky;
-      top: 0;
     }
 
     .logo {
@@ -396,9 +395,9 @@
     .pay-card.bank::before { background: linear-gradient(90deg, var(--cyan), transparent); }
     .pay-card.contact::before { background: linear-gradient(90deg, var(--pink), transparent); }
 
-    .game-card:nth-child(1)::before { background: linear-gradient(90deg, var(--cyan), transparent); }
-    .game-card:nth-child(2)::before { background: linear-gradient(90deg, var(--pink), transparent); }
-    .game-card:nth-child(3)::before { background: linear-gradient(90deg, var(--yellow), transparent); }
+    .game-card:nth-child(3n+1)::before { background: linear-gradient(90deg, var(--cyan), transparent); }
+    .game-card:nth-child(3n+2)::before { background: linear-gradient(90deg, var(--pink), transparent); }
+    .game-card:nth-child(3n+3)::before { background: linear-gradient(90deg, var(--yellow), transparent); }
 
     .pay-card:hover, .game-card:hover {
       border-color: rgba(0,240,255,0.3);
@@ -439,6 +438,35 @@
       color: var(--text-dim);
       letter-spacing: 1.5px;
       text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .games-status.loading::before {
+      content: '';
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border: 2px solid var(--cyan);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .data-source-tag {
+      display: inline-block;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      padding: 2px 8px;
+      border: 1px solid rgba(0,240,255,0.2);
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      margin-top: 4px;
+      text-transform: uppercase;
     }
 
     .game-card {
@@ -454,6 +482,20 @@
       object-fit: cover;
       background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(255, 45, 120, 0.08));
       border-bottom: 1px solid var(--border);
+    }
+
+    .game-cover-placeholder {
+      width: 100%;
+      aspect-ratio: 460 / 215;
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.06), rgba(255, 45, 120, 0.06));
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 3px;
+      color: var(--text-dim);
     }
 
     .game-body {
@@ -578,7 +620,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: gap;
+      flex-wrap: wrap;
       gap: 20px;
       background: rgba(6,9,16,0.9);
     }
@@ -632,10 +674,7 @@
       to   { transform: translateX(-50%); }
     }
 
-    html[lang="ar"] {
-      direction: rtl;
-    }
-
+    html[lang="ar"] { direction: rtl; }
     html[lang="ar"] header { flex-direction: row-reverse; }
     html[lang="ar"] .contact-link { flex-direction: row-reverse; }
 
@@ -679,7 +718,7 @@
   <div class="hero-glow"></div>
   <p class="hero-tag" data-i18n="hero_tag">// TUNISIA'S STEAM KEY DEALER</p>
   <h1>ASTR<span class="accent">O</span>X</h1>
-  <p class="hero-sub" data-i18n="hero_sub">Steam Game Keys · 0 % Conversion and services Fees · Secure · Fast</p>
+  <p class="hero-sub" data-i18n="hero_sub">Steam Game Keys · 0% Fees · Secure · Fast</p>
   <div class="hero-badges">
     <span class="badge yellow" data-i18n="badge_usd">Steam USD Prices</span>
     <span class="badge" data-i18n="badge_delivery">Delivery &lt; 12 Hours</span>
@@ -727,7 +766,7 @@
     <span data-i18n="section_label">// GAMES</span>
     <span data-i18n="games_title">FEATURED GAMES</span>
   </div>
-  <div id="gamesStatus" class="games-status" data-i18n="games_loading">Loading featured games from Steam...</div>
+  <div id="gamesStatus" class="games-status loading" data-i18n="games_loading">Loading featured games from Steam...</div>
   <div class="games-grid" id="featuredGames"></div>
 </section>
 
@@ -739,26 +778,22 @@
     <span data-i18n="pay_title">PAYMENT OPTIONS</span>
   </div>
   <div class="payment-grid">
-
     <div class="pay-card usd">
       <span class="pay-icon">$</span>
       <div class="pay-title" data-i18n="usd_title">Steam Prices in USD</div>
       <p data-i18n="usd_desc">Steam uses USD prices. We confirm the game price before payment so you know exactly what you are paying for.</p>
       <span class="zero-fee" data-i18n="usd_label">USD PRICING</span>
     </div>
-
     <div class="pay-card bank">
       <span class="pay-icon">🏦</span>
       <div class="pay-title" data-i18n="bank_title">Bank Transfer</div>
       <p data-i18n="bank_desc">Payment is made by bank transfer. Transfers usually take 1 to 2 business days to arrive. Bank details are shared after order confirmation.</p>
     </div>
-
     <div class="pay-card contact">
       <span class="pay-icon">💬</span>
       <div class="pay-title" data-i18n="contact_title">Key Delivery</div>
       <p data-i18n="contact_desc">After we receive the transfer, the Steam key is delivered in less than 12 hours.</p>
     </div>
-
   </div>
 </section>
 
@@ -795,374 +830,338 @@
 </footer>
 
 <script>
+// ─────────────────────────────────────────────
+//  i18n strings
+// ─────────────────────────────────────────────
 const i18n = {
   en: {
-    nav_how: "HOW IT WORKS",
-    nav_games: "GAMES",
-    nav_pay: "PAYMENT",
-    nav_contact: "CONTACT",
-    nav_faq: "FAQ",
-    hero_tag: "// TUNISIA'S STEAM KEY DEALER",
-    hero_sub: "Steam Game Keys · 0 % Conversion and services Fees · Secure · Fast",
-    badge_usd: "Steam USD Prices",
-    badge_delivery: "Delivery < 12 Hours",
-    badge_bank: "Bank Transfer",
-    cta_order: "ORDER NOW",
-    cta_learn: "HOW IT WORKS",
-    section_label: "//",
-    how_title: "HOW IT WORKS",
-    step1_t: "CHOOSE",
-    step1_p: "Choose the Steam game you want. Steam prices are shown in USD.",
-    step2_t: "ORDER",
-    step2_p: "Send us the game title. We confirm availability and the final USD-based price.",
-    step3_t: "TRANSFER",
-    step3_p: "Pay by bank transfer. Bank transfers usually take 1 to 2 business days to arrive.",
-    step4_t: "RECEIVE",
-    step4_p: "Once the transfer is received, your Steam key is delivered in less than 12 hours.",
-    games_title: "FEATURED GAMES",
-    games_loading: "Loading featured games from Steam...",
-    games_fallback_notice: "Showing curated games while Steam data is unavailable.",
-    games_error: "Could not load Steam data right now.",
-    game_cta: "View on Steam",
-    price_na: "Price unavailable",
-    price_free: "Free to Play",
-    game1_t: "Battlefield 6",
-    game1_p: "$69.99",
-    game1_d: "High-intensity warfare, large-scale battles, and next-generation multiplayer action.",
-    game2_t: "ARC Raiders",
-    game2_p: "$39.99",
-    game2_d: "A multiplayer extraction adventure with survival, exploration, and tactical combat.",
-    game3_t: "Forza Horizon 6",
-    game3_p: "$69.99",
-    game3_d: "Open-world racing, stunning cars, and a huge driving festival experience.",
-    pay_title: "PAYMENT OPTIONS",
-    usd_title: "Steam Prices in USD",
-    usd_desc: "Steam uses USD prices. We confirm the game price before payment so you know exactly what you are paying for.",
-    usd_label: "USD PRICING",
-    bank_title: "Bank Transfer",
-    bank_desc: "Payment is made by bank transfer. Transfers usually take 1 to 2 business days to arrive. Bank details are shared after order confirmation.",
-    contact_title: "Key Delivery",
-    contact_desc: "After we receive the transfer, the Steam key is delivered in less than 12 hours.",
-    contact_sec_title: "REACH US",
-    faq_title: "FAQ",
-    footer_copy: "© 2025 ASTROX · TUNISIA · ALL RIGHTS RESERVED",
-    faqs: [
-      { q: "How do prices work?", a: "Steam prices are shown in USD. We confirm the exact game price with you before payment." },
-      { q: "How long does bank transfer take?", a: "Bank transfers usually take 1 to 2 business days to arrive." },
-      { q: "When do I receive the key?", a: "After the transfer is received, the Steam key is sent in less than 12 hours." },
-      { q: "Can I request a specific game?", a: "Yes. Send us the game title and we will confirm availability." },
-      { q: "What if my key doesn't work?", a: "Contact us immediately and we will review the issue and help resolve it." }
+    nav_how:"HOW IT WORKS",nav_games:"GAMES",nav_pay:"PAYMENT",nav_contact:"CONTACT",nav_faq:"FAQ",
+    hero_tag:"// TUNISIA'S STEAM KEY DEALER",
+    hero_sub:"Steam Game Keys · 0% Fees · Secure · Fast",
+    badge_usd:"Steam USD Prices",badge_delivery:"Delivery < 12 Hours",badge_bank:"Bank Transfer",
+    cta_order:"ORDER NOW",cta_learn:"HOW IT WORKS",section_label:"//",
+    how_title:"HOW IT WORKS",
+    step1_t:"CHOOSE",step1_p:"Choose the Steam game you want. Steam prices are shown in USD.",
+    step2_t:"ORDER",step2_p:"Send us the game title. We confirm availability and the final USD-based price.",
+    step3_t:"TRANSFER",step3_p:"Pay by bank transfer. Bank transfers usually take 1 to 2 business days to arrive.",
+    step4_t:"RECEIVE",step4_p:"Once the transfer is received, your Steam key is delivered in less than 12 hours.",
+    games_title:"FEATURED GAMES",games_loading:"Loading featured games from Steam...",
+    games_fallback_notice:"Showing curated games — Steam data temporarily unavailable.",
+    game_cta:"View on Steam",price_na:"Price unavailable",price_free:"Free to Play",
+    pay_title:"PAYMENT OPTIONS",
+    usd_title:"Steam Prices in USD",
+    usd_desc:"Steam uses USD prices. We confirm the game price before payment so you know exactly what you are paying for.",
+    usd_label:"USD PRICING",
+    bank_title:"Bank Transfer",
+    bank_desc:"Payment is made by bank transfer. Transfers usually take 1 to 2 business days to arrive. Bank details are shared after order confirmation.",
+    contact_title:"Key Delivery",contact_desc:"After we receive the transfer, the Steam key is delivered in less than 12 hours.",
+    contact_sec_title:"REACH US",faq_title:"FAQ",
+    footer_copy:"© 2025 ASTROX · TUNISIA · ALL RIGHTS RESERVED",
+    faqs:[
+      {q:"How do prices work?",a:"Steam prices are shown in USD. We confirm the exact game price with you before payment."},
+      {q:"How long does bank transfer take?",a:"Bank transfers usually take 1 to 2 business days to arrive."},
+      {q:"When do I receive the key?",a:"After the transfer is received, the Steam key is sent in less than 12 hours."},
+      {q:"Can I request a specific game?",a:"Yes. Send us the game title and we will confirm availability."},
+      {q:"What if my key doesn't work?",a:"Contact us immediately and we will review the issue and help resolve it."}
     ],
-    ticker_items: ["STEAM KEYS", "USD PRICES", "BANK TRANSFER", "DELIVERY < 12 HOURS", "TRUSTED SELLER", "TUNISIA", "ASTROX"]
+    ticker_items:["STEAM KEYS","USD PRICES","BANK TRANSFER","DELIVERY < 12 HOURS","TRUSTED SELLER","TUNISIA","ASTROX"]
   },
   fr: {
-    nav_how: "COMMENT ÇA MARCHE",
-    nav_games: "JEUX",
-    nav_pay: "PAIEMENT",
-    nav_contact: "CONTACT",
-    nav_faq: "FAQ",
-    hero_tag: "// REVENDEUR DE CLÉS STEAM EN TUNISIE",
-    hero_sub: "Clés de jeux Steam · Rapide · Sécurisé",
-    badge_usd: "Prix Steam en USD",
-    badge_delivery: "Livraison < 12 Heures",
-    badge_bank: "Virement Bancaire",
-    cta_order: "COMMANDER",
-    cta_learn: "COMMENT ÇA MARCHE",
-    section_label: "//",
-    how_title: "COMMENT ÇA MARCHE",
-    step1_t: "CHOISIR",
-    step1_p: "Choisissez le jeu Steam que vous voulez. Les prix Steam sont affichés en USD.",
-    step2_t: "COMMANDER",
-    step2_p: "Envoyez-nous le nom du jeu. Nous confirmons la disponibilité et le prix final basé sur l'USD.",
-    step3_t: "VIREMENT",
-    step3_p: "Payez par virement bancaire. Les virements prennent généralement 1 à 2 jours ouvrables.",
-    step4_t: "RECEVOIR",
-    step4_p: "Une fois le virement reçu, votre clé Steam est livrée en moins de 12 heures.",
-    games_title: "JEUX EN VEDETTE",
-    games_loading: "Chargement des jeux vedettes depuis Steam...",
-    games_fallback_notice: "Affichage de jeux sélectionnés en attendant les données Steam.",
-    games_error: "Impossible de charger les données Steam pour le moment.",
-    game_cta: "Voir sur Steam",
-    price_na: "Prix indisponible",
-    price_free: "Gratuit",
-    game1_t: "Battlefield 6",
-    game1_p: "$69.99",
-    game1_d: "Guerre intense, batailles à grande échelle et action multijoueur nouvelle génération.",
-    game2_t: "ARC Raiders",
-    game2_p: "$39.99",
-    game2_d: "Une aventure d'extraction multijoueur avec survie, exploration et combat tactique.",
-    game3_t: "Forza Horizon 6",
-    game3_p: "$69.99",
-    game3_d: "Course en monde ouvert, voitures incroyables et immense expérience de festival automobile.",
-    pay_title: "OPTIONS DE PAIEMENT",
-    usd_title: "Prix Steam en USD",
-    usd_desc: "Steam utilise des prix en USD. Nous confirmons le prix du jeu avant le paiement pour que tout soit clair.",
-    usd_label: "PRIX EN USD",
-    bank_title: "Virement Bancaire",
-    bank_desc: "Le paiement se fait par virement bancaire. Les virements prennent généralement 1 à 2 jours ouvrables. Les coordonnées bancaires sont envoyées après confirmation de la commande.",
-    contact_title: "Livraison de la Clé",
-    contact_desc: "Après réception du virement, la clé Steam est livrée en moins de 12 heures.",
-    contact_sec_title: "NOUS CONTACTER",
-    faq_title: "FAQ",
-    footer_copy: "© 2025 ASTROX · TUNISIE · TOUS DROITS RÉSERVÉS",
-    faqs: [
-      { q: "Comment fonctionnent les prix ?", a: "Les prix Steam sont affichés en USD. Nous confirmons le prix exact du jeu avant le paiement." },
-      { q: "Combien de temps prend le virement ?", a: "Les virements bancaires prennent généralement 1 à 2 jours ouvrables." },
-      { q: "Quand vais-je recevoir la clé ?", a: "Après réception du virement, la clé Steam est envoyée en moins de 12 heures." },
-      { q: "Puis-je demander un jeu spécifique ?", a: "Oui. Envoyez-nous le nom du jeu et nous confirmerons la disponibilité." },
-      { q: "Que faire si la clé ne fonctionne pas ?", a: "Contactez-nous immédiatement et nous examinerons le problème pour vous aider." }
+    nav_how:"COMMENT ÇA MARCHE",nav_games:"JEUX",nav_pay:"PAIEMENT",nav_contact:"CONTACT",nav_faq:"FAQ",
+    hero_tag:"// REVENDEUR DE CLÉS STEAM EN TUNISIE",
+    hero_sub:"Clés de jeux Steam · Rapide · Sécurisé",
+    badge_usd:"Prix Steam en USD",badge_delivery:"Livraison < 12 Heures",badge_bank:"Virement Bancaire",
+    cta_order:"COMMANDER",cta_learn:"COMMENT ÇA MARCHE",section_label:"//",
+    how_title:"COMMENT ÇA MARCHE",
+    step1_t:"CHOISIR",step1_p:"Choisissez le jeu Steam que vous voulez. Les prix Steam sont affichés en USD.",
+    step2_t:"COMMANDER",step2_p:"Envoyez-nous le nom du jeu. Nous confirmons la disponibilité et le prix final basé sur l'USD.",
+    step3_t:"VIREMENT",step3_p:"Payez par virement bancaire. Les virements prennent généralement 1 à 2 jours ouvrables.",
+    step4_t:"RECEVOIR",step4_p:"Une fois le virement reçu, votre clé Steam est livrée en moins de 12 heures.",
+    games_title:"JEUX EN VEDETTE",games_loading:"Chargement des jeux depuis Steam...",
+    games_fallback_notice:"Jeux sélectionnés — données Steam temporairement indisponibles.",
+    game_cta:"Voir sur Steam",price_na:"Prix indisponible",price_free:"Gratuit",
+    pay_title:"OPTIONS DE PAIEMENT",
+    usd_title:"Prix Steam en USD",
+    usd_desc:"Steam utilise des prix en USD. Nous confirmons le prix du jeu avant le paiement pour que tout soit clair.",
+    usd_label:"PRIX EN USD",
+    bank_title:"Virement Bancaire",
+    bank_desc:"Le paiement se fait par virement bancaire. Les virements prennent généralement 1 à 2 jours ouvrables. Les coordonnées bancaires sont envoyées après confirmation de la commande.",
+    contact_title:"Livraison de la Clé",contact_desc:"Après réception du virement, la clé Steam est livrée en moins de 12 heures.",
+    contact_sec_title:"NOUS CONTACTER",faq_title:"FAQ",
+    footer_copy:"© 2025 ASTROX · TUNISIE · TOUS DROITS RÉSERVÉS",
+    faqs:[
+      {q:"Comment fonctionnent les prix ?",a:"Les prix Steam sont affichés en USD. Nous confirmons le prix exact du jeu avant le paiement."},
+      {q:"Combien de temps prend le virement ?",a:"Les virements bancaires prennent généralement 1 à 2 jours ouvrables."},
+      {q:"Quand vais-je recevoir la clé ?",a:"Après réception du virement, la clé Steam est envoyée en moins de 12 heures."},
+      {q:"Puis-je demander un jeu spécifique ?",a:"Oui. Envoyez-nous le nom du jeu et nous confirmerons la disponibilité."},
+      {q:"Que faire si la clé ne fonctionne pas ?",a:"Contactez-nous immédiatement et nous examinerons le problème pour vous aider."}
     ],
-    ticker_items: ["CLÉS STEAM", "PRIX EN USD", "VIREMENT BANCAIRE", "LIVRAISON < 12 HEURES", "VENDEUR DE CONFIANCE", "TUNISIE", "ASTROX"]
+    ticker_items:["CLÉS STEAM","PRIX EN USD","VIREMENT BANCAIRE","LIVRAISON < 12 HEURES","VENDEUR DE CONFIANCE","TUNISIE","ASTROX"]
   },
   ar: {
-    nav_how: "كيف يعمل",
-    nav_games: "الألعاب",
-    nav_pay: "الدفع",
-    nav_contact: "تواصل معنا",
-    nav_faq: "أسئلة شائعة",
-    hero_tag: "// بيع مفاتيح ستيم في تونس",
-    hero_sub: "مفاتيح ألعاب ستيم · سريع · آمن",
-    badge_usd: "أسعار ستيم بالدولار",
-    badge_delivery: "التسليم < 12 ساعة",
-    badge_bank: "تحويل بنكي",
-    cta_order: "اطلب الآن",
-    cta_learn: "كيف يعمل",
-    section_label: "//",
-    how_title: "كيف يعمل",
-    step1_t: "اختر",
-    step1_p: "اختر لعبة ستيم التي تريدها. أسعار ستيم معروضة بالدولار USD.",
-    step2_t: "اطلب",
-    step2_p: "أرسل لنا اسم اللعبة. نؤكد التوفر والسعر النهائي المبني على الدولار.",
-    step3_t: "حوّل",
-    step3_p: "ادفع عن طريق تحويل بنكي. عادةً يصل التحويل خلال 1 إلى 2 يوم عمل.",
-    step4_t: "استلم",
-    step4_p: "بعد استلام التحويل، يتم إرسال مفتاح ستيم في أقل من 12 ساعة.",
-    games_title: "ألعاب مميزة",
-    games_loading: "جاري تحميل الألعاب المميزة من ستيم...",
-    games_fallback_notice: "نعرض ألعابا مختارة مؤقتا حتى تتوفر بيانات ستيم.",
-    games_error: "تعذر تحميل بيانات ستيم حاليا.",
-    game_cta: "عرض على ستيم",
-    price_na: "السعر غير متوفر",
-    price_free: "مجاني",
-    game1_t: "Battlefield 6",
-    game1_p: "$69.99",
-    game1_d: "حروب قوية، معارك واسعة النطاق، وأكشن جماعي من الجيل الجديد.",
-    game2_t: "ARC Raiders",
-    game2_p: "$39.99",
-    game2_d: "مغامرة استخراج جماعية مع البقاء والاستكشاف والقتال التكتيكي.",
-    game3_t: "Forza Horizon 6",
-    game3_p: "$69.99",
-    game3_d: "سباقات عالم مفتوح، سيارات مذهلة، وتجربة مهرجان قيادة ضخمة.",
-    pay_title: "خيارات الدفع",
-    usd_title: "أسعار ستيم بالدولار",
-    usd_desc: "ستيم يستخدم الأسعار بالدولار USD. نؤكد سعر اللعبة قبل الدفع حتى تكون الصورة واضحة بالكامل.",
-    usd_label: "تسعير بالدولار",
-    bank_title: "تحويل بنكي",
-    bank_desc: "يتم الدفع عن طريق تحويل بنكي. عادةً يستغرق التحويل 1 إلى 2 يوم عمل. يتم إرسال معلومات الحساب بعد تأكيد الطلب.",
-    contact_title: "تسليم المفتاح",
-    contact_desc: "بعد استلام التحويل، يتم إرسال مفتاح ستيم في أقل من 12 ساعة.",
-    contact_sec_title: "تواصل معنا",
-    faq_title: "أسئلة شائعة",
-    footer_copy: "© 2025 ASTROX · تونس · جميع الحقوق محفوظة",
-    faqs: [
-      { q: "كيف تعمل الأسعار؟", a: "أسعار ستيم معروضة بالدولار USD. نؤكد السعر النهائي معك قبل الدفع." },
-      { q: "كم يستغرق التحويل البنكي؟", a: "عادةً يستغرق التحويل البنكي من 1 إلى 2 يوم عمل." },
-      { q: "متى أستلم المفتاح؟", a: "بعد استلام التحويل، يتم إرسال مفتاح ستيم في أقل من 12 ساعة." },
-      { q: "هل يمكنني طلب لعبة معينة؟", a: "نعم. أرسل لنا اسم اللعبة وسنؤكد التوفر." },
-      { q: "ماذا لو لم يعمل المفتاح؟", a: "تواصل معنا فورًا وسنراجع المشكلة ونساعدك في حلها." }
+    nav_how:"كيف يعمل",nav_games:"الألعاب",nav_pay:"الدفع",nav_contact:"تواصل معنا",nav_faq:"أسئلة شائعة",
+    hero_tag:"// بيع مفاتيح ستيم في تونس",
+    hero_sub:"مفاتيح ألعاب ستيم · سريع · آمن",
+    badge_usd:"أسعار ستيم بالدولار",badge_delivery:"التسليم < 12 ساعة",badge_bank:"تحويل بنكي",
+    cta_order:"اطلب الآن",cta_learn:"كيف يعمل",section_label:"//",
+    how_title:"كيف يعمل",
+    step1_t:"اختر",step1_p:"اختر لعبة ستيم التي تريدها. أسعار ستيم معروضة بالدولار USD.",
+    step2_t:"اطلب",step2_p:"أرسل لنا اسم اللعبة. نؤكد التوفر والسعر النهائي المبني على الدولار.",
+    step3_t:"حوّل",step3_p:"ادفع عن طريق تحويل بنكي. عادةً يصل التحويل خلال 1 إلى 2 يوم عمل.",
+    step4_t:"استلم",step4_p:"بعد استلام التحويل، يتم إرسال مفتاح ستيم في أقل من 12 ساعة.",
+    games_title:"ألعاب مميزة",games_loading:"جاري تحميل الألعاب من ستيم...",
+    games_fallback_notice:"عرض ألعاب مختارة — بيانات ستيم غير متوفرة مؤقتاً.",
+    game_cta:"عرض على ستيم",price_na:"السعر غير متوفر",price_free:"مجاني",
+    pay_title:"خيارات الدفع",
+    usd_title:"أسعار ستيم بالدولار",
+    usd_desc:"ستيم يستخدم الأسعار بالدولار USD. نؤكد سعر اللعبة قبل الدفع حتى تكون الصورة واضحة بالكامل.",
+    usd_label:"تسعير بالدولار",
+    bank_title:"تحويل بنكي",
+    bank_desc:"يتم الدفع عن طريق تحويل بنكي. عادةً يستغرق التحويل 1 إلى 2 يوم عمل. يتم إرسال معلومات الحساب بعد تأكيد الطلب.",
+    contact_title:"تسليم المفتاح",contact_desc:"بعد استلام التحويل، يتم إرسال مفتاح ستيم في أقل من 12 ساعة.",
+    contact_sec_title:"تواصل معنا",faq_title:"أسئلة شائعة",
+    footer_copy:"© 2025 ASTROX · تونس · جميع الحقوق محفوظة",
+    faqs:[
+      {q:"كيف تعمل الأسعار؟",a:"أسعار ستيم معروضة بالدولار USD. نؤكد السعر النهائي معك قبل الدفع."},
+      {q:"كم يستغرق التحويل البنكي؟",a:"عادةً يستغرق التحويل البنكي من 1 إلى 2 يوم عمل."},
+      {q:"متى أستلم المفتاح؟",a:"بعد استلام التحويل، يتم إرسال مفتاح ستيم في أقل من 12 ساعة."},
+      {q:"هل يمكنني طلب لعبة معينة؟",a:"نعم. أرسل لنا اسم اللعبة وسنؤكد التوفر."},
+      {q:"ماذا لو لم يعمل المفتاح؟",a:"تواصل معنا فورًا وسنراجع المشكلة ونساعدك في حلها."}
     ],
-    ticker_items: ["مفاتيح ستيم", "أسعار بالدولار", "تحويل بنكي", "التسليم < 12 ساعة", "بائع موثوق", "تونس", "ASTROX"]
+    ticker_items:["مفاتيح ستيم","أسعار بالدولار","تحويل بنكي","التسليم < 12 ساعة","بائع موثوق","تونس","ASTROX"]
   }
 };
 
-const featuredGamesCache = new Map();
-const FEATURED_STEAM_APP_IDS = [3764200, 2807960, 2483190, 1808500, 3059520, 3405690];
-const STEAM_STORE_ORIGIN = 'https://store.steampowered.com';
+// ─────────────────────────────────────────────
+//  Config: App IDs to feature
+// ─────────────────────────────────────────────
+const FEATURED_APP_IDS = [3764200, 2807960, 2483190, 1808500, 3059520, 3405690];
 
-let currentLang = 'en';
+// ─────────────────────────────────────────────
+//  Hard-coded fallback data (always works)
+//  Keyed by appId — update prices manually when needed.
+// ─────────────────────────────────────────────
+const FALLBACK_GAMES = {
+  3764200: { name:"Battlefield 6",       price:"$69.99", short_description:"High-intensity warfare, large-scale battles, and next-generation multiplayer action.", image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3764200/header.jpg",  url:"https://store.steampowered.com/app/3764200" },
+  2807960: { name:"ARC Raiders",         price:"$39.99", short_description:"A multiplayer extraction adventure with survival, exploration, and tactical combat.",   image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2807960/header.jpg",  url:"https://store.steampowered.com/app/2807960" },
+  2483190: { name:"Forza Horizon 6",     price:"$69.99", short_description:"Open-world racing, stunning cars, and a huge driving festival experience.",            image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2483190/header.jpg",  url:"https://store.steampowered.com/app/2483190" },
+  1808500: { name:"Starfield",           price:"$69.99", short_description:"An epic RPG set in space from Bethesda. Explore hundreds of planets across the galaxy.",image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1808500/header.jpg",  url:"https://store.steampowered.com/app/1808500" },
+  3059520: { name:"Avowed",             price:"$59.99", short_description:"A first-person RPG from Obsidian. Explore the Living Lands in a rich fantasy world.",   image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3059520/header.jpg",  url:"https://store.steampowered.com/app/3059520" },
+  3405690: { name:"South of Midnight",  price:"$49.99", short_description:"A supernatural action-adventure set in a folklore-inspired American Deep South.",       image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3405690/header.jpg",  url:"https://store.steampowered.com/app/3405690" },
+};
 
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/\"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+// ─────────────────────────────────────────────
+//  Session-level cache (survives lang switches,
+//  cleared on tab close — no stale data issues)
+// ─────────────────────────────────────────────
+const SESSION_KEY = 'astrox_steam_cache_v2';
+
+function readCache() {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
 }
 
-function getFallbackGames(t) {
+function writeCache(appId, data) {
+  try {
+    const cache = readCache();
+    cache[appId] = data;
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(cache));
+  } catch {}
+}
+
+// ─────────────────────────────────────────────
+//  Fetch helpers
+// ─────────────────────────────────────────────
+
+/** Fetch with timeout using AbortController */
+async function fetchWithTimeout(url, timeoutMs = 7000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { signal: ctrl.signal, cache: 'no-store' });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Build Steam Store URL variants via different CORS proxies.
+ * allorigins.win is the most reliable free proxy for static pages.
+ * corsproxy.io is the secondary.
+ * Direct is tried last (works on localhost / if Steam ever opens CORS).
+ */
+function buildProxyUrls(appId) {
+  const steamUrl = `https://store.steampowered.com/api/appdetails?appids=${appId}&cc=us&l=english`;
   return [
-    {
-      name: t.game1_t,
-      price: t.game1_p,
-      short_description: t.game1_d,
-      image: '',
-      url: ''
-    },
-    {
-      name: t.game2_t,
-      price: t.game2_p,
-      short_description: t.game2_d,
-      image: '',
-      url: ''
-    },
-    {
-      name: t.game3_t,
-      price: t.game3_p,
-      short_description: t.game3_d,
-      image: '',
-      url: ''
-    }
+    `https://api.allorigins.win/get?url=${encodeURIComponent(steamUrl)}`,
+    `https://corsproxy.io/?url=${encodeURIComponent(steamUrl)}`,
+    steamUrl,  // direct (last resort, works on localhost)
   ];
 }
 
-function normalizeGame(game, t) {
-  const hasPrice = typeof game.price === 'string' && game.price.trim().length > 0;
+/**
+ * Parse the raw response depending on which proxy format was used.
+ * allorigins wraps in { contents: "..." }, others return JSON directly.
+ */
+function parseSteamPayload(raw, appId) {
+  // allorigins: { contents: "{...}" }
+  let payload = raw;
+  if (raw && typeof raw.contents === 'string') {
+    payload = JSON.parse(raw.contents);
+  }
+
+  const entry = payload && payload[String(appId)];
+  if (!entry || entry.success === false || !entry.data) return null;
+  return entry.data;
+}
+
+/** Extract normalised game object from Steam appdetails data */
+function extractGame(data, appId) {
+  if (!data) return null;
+  const price = data.price_overview?.final_formatted || (data.is_free ? 'Free to Play' : null);
   return {
-    name: game.name || '',
-    short_description: game.short_description || '',
-    price: hasPrice ? game.price : (game.is_free ? t.price_free : t.price_na),
-    image: game.image || '',
-    url: game.url || ''
+    name: data.name || '',
+    short_description: data.short_description || '',
+    image: data.header_image || `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${appId}/header.jpg`,
+    price: price || '',
+    is_free: Boolean(data.is_free),
+    url: `https://store.steampowered.com/app/${appId}`,
   };
 }
 
-function renderFeaturedGames(games, t) {
-  const grid = document.getElementById('featuredGames');
-  const items = Array.isArray(games) ? games : [];
+/** Fetch a single game, trying each proxy in sequence */
+async function fetchGameById(appId) {
+  const cache = readCache();
+  if (cache[appId]) return cache[appId];
 
-  grid.innerHTML = items.map((game) => {
-    const safeTitle = escapeHtml(game.name || 'Steam Game');
-    const safePrice = escapeHtml(game.price || t.price_na);
-    const safeDescription = escapeHtml(game.short_description || '');
-    const hasImage = Boolean(game.image);
-    const safeImage = escapeHtml(game.image || '');
-    const hasUrl = Boolean(game.url);
-    const safeUrl = escapeHtml(game.url || '');
+  const urls = buildProxyUrls(appId);
 
-    return `
-      <article class="game-card">
-        ${hasImage
-          ? `<img class="game-cover" src="${safeImage}" alt="${safeTitle}" loading="lazy">`
-          : `<div class="game-cover" aria-hidden="true"></div>`}
-        <div class="game-body">
-          <div class="game-title">${safeTitle}</div>
-          <div class="game-price">${safePrice}</div>
-          <p>${safeDescription}</p>
-          ${hasUrl
-            ? `<div class="game-actions"><a class="game-link" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(t.game_cta)}</a></div>`
-            : ''}
-        </div>
-      </article>
-    `;
-  }).join('');
-}
-
-async function fetchSteamGameById(appId, lang) {
-  const steamUrl = `${STEAM_STORE_ORIGIN}/api/appdetails?appids=${appId}&cc=us&l=${encodeURIComponent(lang)}`;
-  const endpoints = [
-    steamUrl,
-    `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(steamUrl)}`
-  ];
-
-  let node = null;
-  for (const endpoint of endpoints) {
+  for (const url of urls) {
     try {
-      const response = await fetch(endpoint, { method: 'GET', cache: 'no-store' });
-      if (!response.ok) {
-        continue;
+      const raw = await fetchWithTimeout(url, 7000);
+      const data = parseSteamPayload(raw, appId);
+      const game = extractGame(data, appId);
+      if (game && game.name) {
+        writeCache(appId, game);
+        return game;
       }
-
-      const payload = await response.json();
-      const candidate = payload && payload[String(appId)];
-      if (!candidate) {
-        continue;
-      }
-
-      if (candidate.success === false) {
-        continue;
-      }
-
-      if (!candidate.data) {
-        continue;
-      }
-
-      node = candidate;
-      break;
-    } catch (error) {
-      console.warn('Steam fetch failed for endpoint:', endpoint, error);
+    } catch (err) {
+      console.warn(`[Astrox] Failed ${url}:`, err.message);
     }
   }
 
-  if (!node || !node.data) {
-    return null;
+  // All proxies failed — use fallback but still cache so we don't retry
+  const fb = FALLBACK_GAMES[appId];
+  if (fb) {
+    writeCache(appId, fb);
+    return fb;
   }
-
-  const game = node.data;
-  return {
-    name: game.name || '',
-    short_description: game.short_description || '',
-    image: game.header_image || '',
-    price: game.price_overview && game.price_overview.final_formatted ? game.price_overview.final_formatted : '',
-    is_free: Boolean(game.is_free),
-    url: `https://store.steampowered.com/app/${appId}`
-  };
+  return null;
 }
+
+// ─────────────────────────────────────────────
+//  Rendering
+// ─────────────────────────────────────────────
+
+function escapeHtml(v) {
+  return String(v ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function renderGame(game, t, sourceTag) {
+  const title = escapeHtml(game.name || 'Steam Game');
+  const price = escapeHtml(game.price || (game.is_free ? t.price_free : t.price_na));
+  const desc  = escapeHtml(game.short_description || '');
+  const url   = escapeHtml(game.url || '');
+  const img   = escapeHtml(game.image || '');
+
+  return `
+    <article class="game-card">
+      ${img
+        ? `<img class="game-cover" src="${img}" alt="${title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        : ''}
+      <div class="game-cover-placeholder" style="${img ? 'display:none' : ''}">STEAM GAME</div>
+      <div class="game-body">
+        <div class="game-title">${title}</div>
+        <div class="game-price">${price}</div>
+        <p>${desc}</p>
+        ${url ? `<div class="game-actions"><a class="game-link" href="${url}" target="_blank" rel="noopener noreferrer">${escapeHtml(t.game_cta)}</a></div>` : ''}
+        ${sourceTag ? `<div class="data-source-tag">${escapeHtml(sourceTag)}</div>` : ''}
+      </div>
+    </article>`;
+}
+
+// ─────────────────────────────────────────────
+//  Main loader — streams cards in one by one
+// ─────────────────────────────────────────────
+let currentLang = 'en';
 
 async function loadFeaturedGames(lang) {
   const t = i18n[lang] || i18n.en;
-  const gamesStatus = document.getElementById('gamesStatus');
+  const statusEl = document.getElementById('gamesStatus');
+  const gridEl   = document.getElementById('featuredGames');
 
-  gamesStatus.textContent = t.games_loading;
-  gamesStatus.style.display = 'block';
+  statusEl.className = 'games-status loading';
+  statusEl.textContent = t.games_loading;
+  statusEl.style.display = 'flex';
+  gridEl.innerHTML = '';
 
-  if (featuredGamesCache.has(lang)) {
-    renderFeaturedGames(featuredGamesCache.get(lang), t);
-    gamesStatus.style.display = 'none';
-    return;
-  }
+  let liveCount = 0;
+  let fallbackCount = 0;
 
-  try {
-    const directGames = await Promise.all(
-      FEATURED_STEAM_APP_IDS.map((appId) => fetchSteamGameById(appId, lang).catch(() => null))
-    );
+  // Fetch all games concurrently but render each one as it resolves
+  const promises = FEATURED_APP_IDS.map(async (appId) => {
+    const game = await fetchGameById(appId);
+    if (!game) return;
 
-    const fromApi = directGames.filter(Boolean);
-    if (fromApi.length === 0) {
-      throw new Error('No games returned from Steam API');
+    const isFallback = !readCache()[appId] || FALLBACK_GAMES[appId] === game;
+    if (FALLBACK_GAMES[appId] && game === FALLBACK_GAMES[appId]) {
+      fallbackCount++;
+    } else {
+      liveCount++;
     }
 
-    const normalized = fromApi.map(game => normalizeGame(game, t));
-    if (normalized.length < 3) {
-      const fallback = getFallbackGames(t).slice(0, 3 - normalized.length);
-      normalized.push(...fallback);
-    }
+    gridEl.insertAdjacentHTML('beforeend', renderGame(game, t, null));
+  });
 
-    featuredGamesCache.set(lang, normalized);
-    renderFeaturedGames(normalized, t);
-    gamesStatus.textContent = normalized.length >= 3 ? '' : (t.games_fallback_notice || t.games_error);
-    gamesStatus.style.display = normalized.length >= 3 ? 'none' : 'block';
-  } catch (error) {
-    console.error(error);
-    renderFeaturedGames(getFallbackGames(t), t);
-    gamesStatus.textContent = t.games_fallback_notice || t.games_error;
-    gamesStatus.style.display = 'block';
+  await Promise.allSettled(promises);
+
+  // Update status
+  if (gridEl.children.length === 0) {
+    // Complete failure — render all fallbacks
+    FEATURED_APP_IDS.forEach(id => {
+      const fb = FALLBACK_GAMES[id];
+      if (fb) gridEl.insertAdjacentHTML('beforeend', renderGame(fb, t, null));
+    });
+    statusEl.className = 'games-status';
+    statusEl.textContent = t.games_fallback_notice;
+  } else {
+    statusEl.style.display = 'none';
   }
 }
 
+// ─────────────────────────────────────────────
+//  Language switch
+// ─────────────────────────────────────────────
+
 function setLang(lang) {
   currentLang = lang;
-  const t = i18n[lang];
-  const html = document.documentElement;
-  html.lang = lang;
+  const t = i18n[lang] || i18n.en;
+  document.documentElement.lang = lang;
 
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.dataset.i18n;
-    if (t[key]) el.textContent = t[key];
+    if (t[key] !== undefined) el.textContent = t[key];
   });
 
   document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.textContent.toLowerCase() === lang);
+    btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === lang);
   });
 
   buildFAQ(t.faqs);
@@ -1172,33 +1171,27 @@ function setLang(lang) {
 
 function buildFAQ(faqs) {
   const list = document.getElementById('faqList');
-  list.innerHTML = '';
-  faqs.forEach(item => {
-    const el = document.createElement('div');
-    el.className = 'faq-item';
-    el.innerHTML = `
+  list.innerHTML = faqs.map(item => `
+    <div class="faq-item">
       <div class="faq-q" onclick="toggleFAQ(this)">
         <span>${item.q}</span>
         <span class="arrow">▶</span>
       </div>
       <div class="faq-a">${item.a}</div>
-    `;
-    list.appendChild(el);
-  });
+    </div>`).join('');
 }
 
-function toggleFAQ(el) {
-  el.parentElement.classList.toggle('open');
-}
+function toggleFAQ(el) { el.parentElement.classList.toggle('open'); }
 
 function buildTicker(items) {
-  const ticker = document.getElementById('ticker');
-  const doubled = [...items, ...items, ...items, ...items];
-  ticker.innerHTML = doubled.map(t =>
-    `<span class="ticker-item"><span class="dot">◆</span>${t}</span>`
-  ).join('');
+  const t = document.getElementById('ticker');
+  const all = [...items, ...items, ...items, ...items];
+  t.innerHTML = all.map(s => `<span class="ticker-item"><span class="dot">◆</span>${s}</span>`).join('');
 }
 
+// ─────────────────────────────────────────────
+//  Boot
+// ─────────────────────────────────────────────
 setLang('en');
 </script>
 </body>
