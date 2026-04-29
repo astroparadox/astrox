@@ -689,6 +689,7 @@
 
     html[lang="ar"] { direction: rtl; }
     html[lang="ar"] header { flex-direction: row-reverse; }
+    html[lang="ar"] .lang-switcher { flex-direction: row-reverse; }
     html[lang="ar"] .contact-link { flex-direction: row-reverse; }
 
     @media (max-width: 700px) {
@@ -951,12 +952,12 @@ const FEATURED_APP_IDS = [3764200, 2807960, 2483190, 1808500, 3405690, 3059520];
 //  Keyed by appId — update prices manually when needed.
 // ─────────────────────────────────────────────
 const FALLBACK_GAMES = {
-  3764200: { name:"Resident Evil Requiem", price:"$69.99", short_description:"Requiem for the dead. Nightmare for the living. Prepare to escape death in a heart-stopping survival horror experience.", image:"", url:"https://store.steampowered.com/app/3764200", appid:3764200, is_fallback:true },
-  2807960: { name:"Battlefield 6",        price:"$69.99", short_description:"The ultimate all-out warfare experience where your squad is the deadliest weapon.", image:"", url:"https://store.steampowered.com/app/2807960", appid:2807960, is_fallback:true },
-  2483190: { name:"Forza Horizon 6",      price:"$69.99", short_description:"Discover the breathtaking landscapes of Japan in over 550 cars in Forza Horizon's biggest open-world driving adventure yet.", image:"", url:"https://store.steampowered.com/app/2483190", appid:2483190, is_fallback:true },
-  1808500: { name:"ARC Raiders",          price:"$39.99", short_description:"A multiplayer extraction adventure in a lethal future Earth ravaged by a mechanized threat known as ARC.", image:"", url:"https://store.steampowered.com/app/1808500", appid:1808500, is_fallback:true },
-  3405690: { name:"EA SPORTS FC 26",      price:"$69.99", short_description:"The Club is Yours in EA SPORTS FC 26 with overhauled gameplay, Manager Live Challenges, and new Archetypes.", image:"", url:"https://store.steampowered.com/app/3405690", appid:3405690, is_fallback:true },
-  3059520: { name:"F1 25",                price:"$59.99", short_description:"Leave your mark in F1 25, featuring a revamped My Team mode, Braking Point chapter 3, and more.", image:"", url:"https://store.steampowered.com/app/3059520", appid:3059520, is_fallback:true },
+  3764200: { name:"Resident Evil Requiem", price:"$69.99", short_description:"Requiem for the dead. Nightmare for the living. Prepare to escape death in a heart-stopping survival horror experience.", image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3764200/header.jpg", url:"https://store.steampowered.com/app/3764200", appid:3764200, is_fallback:true },
+  2807960: { name:"Battlefield 6",        price:"$69.99", short_description:"The ultimate all-out warfare experience where your squad is the deadliest weapon.", image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2807960/header.jpg", url:"https://store.steampowered.com/app/2807960", appid:2807960, is_fallback:true },
+  2483190: { name:"Forza Horizon 6",      price:"$69.99", short_description:"Discover the breathtaking landscapes of Japan in over 550 cars in Forza Horizon's biggest open-world driving adventure yet.", image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2483190/header.jpg", url:"https://store.steampowered.com/app/2483190", appid:2483190, is_fallback:true },
+  1808500: { name:"ARC Raiders",          price:"$39.99", short_description:"A multiplayer extraction adventure in a lethal future Earth ravaged by a mechanized threat known as ARC.", image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1808500/header.jpg", url:"https://store.steampowered.com/app/1808500", appid:1808500, is_fallback:true },
+  3405690: { name:"EA SPORTS FC 26",      price:"$69.99", short_description:"The Club is Yours in EA SPORTS FC 26 with overhauled gameplay, Manager Live Challenges, and new Archetypes.", image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3405690/header.jpg", url:"https://store.steampowered.com/app/3405690", appid:3405690, is_fallback:true },
+  3059520: { name:"F1 25",                price:"$59.99", short_description:"Leave your mark in F1 25, featuring a revamped My Team mode, Braking Point chapter 3, and more.", image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3059520/header.jpg", url:"https://store.steampowered.com/app/3059520", appid:3059520, is_fallback:true },
 };
 
 // ─────────────────────────────────────────────
@@ -1124,7 +1125,7 @@ function renderGame(game, t, sourceTag) {
   const price = escapeHtml(formatPriceDisplay(game, t));
   const desc  = escapeHtml(game.short_description || '');
   const url   = escapeHtml(game.url || '');
-  const img   = game.is_fallback ? '' : escapeHtml(game.image || '');
+  const img   = escapeHtml(game.image || '');
 
   return `
     <article class="game-card">
