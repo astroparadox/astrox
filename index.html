@@ -944,19 +944,19 @@ const i18n = {
 // ─────────────────────────────────────────────
 //  Config: App IDs to feature
 // ─────────────────────────────────────────────
-const FEATURED_APP_IDS = [3764200, 1808500, 3405690, 2483190, 2807960, 3059520];
+const FEATURED_APP_IDS = [3764200, 2807960, 2483190, 1808500, 3405690, 3059520];
 
 // ─────────────────────────────────────────────
 //  Hard-coded fallback data (always works)
 //  Keyed by appId — update prices manually when needed.
 // ─────────────────────────────────────────────
 const FALLBACK_GAMES = {
-  3764200: { name:"Battlefield 6",       price:"$69.99", short_description:"High-intensity warfare, large-scale battles, and next-generation multiplayer action.", image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3764200/header.jpg",  url:"https://store.steampowered.com/app/3764200" },
-  2807960: { name:"ARC Raiders",         price:"$39.99", short_description:"A multiplayer extraction adventure with survival, exploration, and tactical combat.",   image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2807960/header.jpg",  url:"https://store.steampowered.com/app/2807960" },
-  2483190: { name:"Forza Horizon 6",     price:"$69.99", short_description:"Open-world racing, stunning cars, and a huge driving festival experience.",            image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2483190/header.jpg",  url:"https://store.steampowered.com/app/2483190" },
-  1808500: { name:"Starfield",           price:"$69.99", short_description:"An epic RPG set in space from Bethesda. Explore hundreds of planets across the galaxy.",image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1808500/header.jpg",  url:"https://store.steampowered.com/app/1808500" },
-  3059520: { name:"Avowed",             price:"$59.99", short_description:"A first-person RPG from Obsidian. Explore the Living Lands in a rich fantasy world.",   image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3059520/header.jpg",  url:"https://store.steampowered.com/app/3059520" },
-  3405690: { name:"South of Midnight",  price:"$49.99", short_description:"A supernatural action-adventure set in a folklore-inspired American Deep South.",       image:"https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3405690/header.jpg",  url:"https://store.steampowered.com/app/3405690" },
+  3764200: { name:"Resident Evil Requiem", price:"$69.99", short_description:"Requiem for the dead. Nightmare for the living. Prepare to escape death in a heart-stopping survival horror experience.", image:"", url:"https://store.steampowered.com/app/3764200", appid:3764200, is_fallback:true },
+  2807960: { name:"Battlefield 6",        price:"$69.99", short_description:"The ultimate all-out warfare experience where your squad is the deadliest weapon.", image:"", url:"https://store.steampowered.com/app/2807960", appid:2807960, is_fallback:true },
+  2483190: { name:"Forza Horizon 6",      price:"$69.99", short_description:"Discover the breathtaking landscapes of Japan in over 550 cars in Forza Horizon's biggest open-world driving adventure yet.", image:"", url:"https://store.steampowered.com/app/2483190", appid:2483190, is_fallback:true },
+  1808500: { name:"ARC Raiders",          price:"$39.99", short_description:"A multiplayer extraction adventure in a lethal future Earth ravaged by a mechanized threat known as ARC.", image:"", url:"https://store.steampowered.com/app/1808500", appid:1808500, is_fallback:true },
+  3405690: { name:"EA SPORTS FC 26",      price:"$69.99", short_description:"The Club is Yours in EA SPORTS FC 26 with overhauled gameplay, Manager Live Challenges, and new Archetypes.", image:"", url:"https://store.steampowered.com/app/3405690", appid:3405690, is_fallback:true },
+  3059520: { name:"F1 25",                price:"$59.99", short_description:"Leave your mark in F1 25, featuring a revamped My Team mode, Braking Point chapter 3, and more.", image:"", url:"https://store.steampowered.com/app/3059520", appid:3059520, is_fallback:true },
 };
 
 // ─────────────────────────────────────────────
@@ -1032,6 +1032,7 @@ function parseSteamPayload(raw, appId) {
 /** Extract normalised game object from Steam appdetails data */
 function extractGame(data, appId) {
   if (!data) return null;
+  if (Number(data.steam_appid) !== Number(appId)) return null;
   const price = data.price_overview?.final_formatted || (data.is_free ? 'Free to Play' : null);
   const priceUsd = typeof data.price_overview?.final === 'number'
     ? data.price_overview.final / 100
@@ -1043,6 +1044,8 @@ function extractGame(data, appId) {
     price: price || '',
     price_usd: priceUsd,
     is_free: Boolean(data.is_free),
+    appid: appId,
+    is_fallback: false,
     url: `https://store.steampowered.com/app/${appId}`,
   };
 }
@@ -1121,7 +1124,7 @@ function renderGame(game, t, sourceTag) {
   const price = escapeHtml(formatPriceDisplay(game, t));
   const desc  = escapeHtml(game.short_description || '');
   const url   = escapeHtml(game.url || '');
-  const img   = escapeHtml(game.image || '');
+  const img   = game.is_fallback ? '' : escapeHtml(game.image || '');
 
   return `
     <article class="game-card">
@@ -1162,7 +1165,6 @@ async function loadFeaturedGames(lang) {
     const game = await fetchGameById(appId);
     if (!game) return;
 
-    const isFallback = !readCache()[appId] || FALLBACK_GAMES[appId] === game;
     if (FALLBACK_GAMES[appId] && game === FALLBACK_GAMES[appId]) {
       fallbackCount++;
     } else {
