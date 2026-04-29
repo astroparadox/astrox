@@ -117,7 +117,12 @@
 
     nav a:hover { color: var(--cyan); text-shadow: var(--glow-c); }
 
-    .lang-switcher { display: flex; gap: 6px; }
+    .lang-switcher {
+      display: flex;
+      gap: 6px;
+      position: relative;
+      z-index: 11;
+    }
 
     .lang-btn {
       font-family: 'Share Tech Mono', monospace;
@@ -129,6 +134,14 @@
       cursor: pointer;
       letter-spacing: 1px;
       transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      min-height: 32px;
+      position: relative;
+      z-index: 2;
+      pointer-events: auto;
     }
 
     .lang-btn:hover, .lang-btn.active {
@@ -716,7 +729,6 @@
 
 <div class="hero">
   <div class="hero-glow"></div>
-  <p class="hero-tag" data-i18n="hero_tag">// TUNISIA'S STEAM KEY DEALER</p>
   <h1>ASTR<span class="accent">O</span>X</h1>
   <p class="hero-sub" data-i18n="hero_sub">Steam Game Keys · 0% Fees · Secure · Fast</p>
   <div class="hero-badges">
@@ -836,7 +848,6 @@
 const i18n = {
   en: {
     nav_how:"HOW IT WORKS",nav_games:"GAMES",nav_pay:"PAYMENT",nav_contact:"CONTACT",nav_faq:"FAQ",
-    hero_tag:"// TUNISIA'S STEAM KEY DEALER",
     hero_sub:"Steam Game Keys · 0% Fees · Secure · Fast",
     badge_usd:"Steam USD Prices",badge_delivery:"Delivery < 12 Hours",badge_bank:"Bank Transfer",
     cta_order:"ORDER NOW",cta_learn:"HOW IT WORKS",section_label:"//",
@@ -868,7 +879,6 @@ const i18n = {
   },
   fr: {
     nav_how:"COMMENT ÇA MARCHE",nav_games:"JEUX",nav_pay:"PAIEMENT",nav_contact:"CONTACT",nav_faq:"FAQ",
-    hero_tag:"// REVENDEUR DE CLÉS STEAM EN TUNISIE",
     hero_sub:"Clés de jeux Steam · Rapide · Sécurisé",
     badge_usd:"Prix Steam en USD",badge_delivery:"Livraison < 12 Heures",badge_bank:"Virement Bancaire",
     cta_order:"COMMANDER",cta_learn:"COMMENT ÇA MARCHE",section_label:"//",
@@ -900,7 +910,6 @@ const i18n = {
   },
   ar: {
     nav_how:"كيف يعمل",nav_games:"الألعاب",nav_pay:"الدفع",nav_contact:"تواصل معنا",nav_faq:"أسئلة شائعة",
-    hero_tag:"// بيع مفاتيح ستيم في تونس",
     hero_sub:"مفاتيح ألعاب ستيم · سريع · آمن",
     badge_usd:"أسعار ستيم بالدولار",badge_delivery:"التسليم < 12 ساعة",badge_bank:"تحويل بنكي",
     cta_order:"اطلب الآن",cta_learn:"كيف يعمل",section_label:"//",
@@ -935,7 +944,7 @@ const i18n = {
 // ─────────────────────────────────────────────
 //  Config: App IDs to feature
 // ─────────────────────────────────────────────
-const FEATURED_APP_IDS = [3764200, 2807960, 2483190, 1808500, 3059520, 3405690];
+const FEATURED_APP_IDS = [3764200, 1808500, 3405690, 2483190, 2807960, 3059520];
 
 // ─────────────────────────────────────────────
 //  Hard-coded fallback data (always works)
@@ -1024,11 +1033,15 @@ function parseSteamPayload(raw, appId) {
 function extractGame(data, appId) {
   if (!data) return null;
   const price = data.price_overview?.final_formatted || (data.is_free ? 'Free to Play' : null);
+  const priceUsd = typeof data.price_overview?.final === 'number'
+    ? data.price_overview.final / 100
+    : null;
   return {
     name: data.name || '',
     short_description: data.short_description || '',
     image: data.header_image || `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${appId}/header.jpg`,
     price: price || '',
+    price_usd: priceUsd,
     is_free: Boolean(data.is_free),
     url: `https://store.steampowered.com/app/${appId}`,
   };
@@ -1074,9 +1087,38 @@ function escapeHtml(v) {
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
+function parseUsdAmountFromString(priceText) {
+  if (!priceText) return null;
+  const cleaned = String(priceText).replace(/,/g, '');
+  const match = cleaned.match(/(\d+(?:\.\d+)?)/);
+  if (!match) return null;
+  const amount = Number(match[1]);
+  return Number.isFinite(amount) ? amount : null;
+}
+
+function roundToNearestTen(value) {
+  return Math.round(value / 10) * 10;
+}
+
+function formatPriceDisplay(game, t) {
+  if (game.is_free) return t.price_free;
+
+  const usdAmount = Number.isFinite(game.price_usd)
+    ? game.price_usd
+    : parseUsdAmountFromString(game.price);
+
+  if (!Number.isFinite(usdAmount)) {
+    return game.price || t.price_na;
+  }
+
+  const usdRoundedDown = Math.floor(usdAmount);
+  const tndRounded = roundToNearestTen(usdAmount * 2.88);
+  return `${usdRoundedDown} USD - ${tndRounded} DT`;
+}
+
 function renderGame(game, t, sourceTag) {
   const title = escapeHtml(game.name || 'Steam Game');
-  const price = escapeHtml(game.price || (game.is_free ? t.price_free : t.price_na));
+  const price = escapeHtml(formatPriceDisplay(game, t));
   const desc  = escapeHtml(game.short_description || '');
   const url   = escapeHtml(game.url || '');
   const img   = escapeHtml(game.image || '');
